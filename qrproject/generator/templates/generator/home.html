@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkForge | QR Code Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="brand">
+                <i class="fa-solid fa-qrcode brand-icon"></i>
+                <span class="brand-name">LinkForge</span>
+            </div>
+            <nav class="site-nav">
+                <a href="#generator">Generate</a>
+                <a href="#history">History</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Turn any link into a scannable code</h1>
+                <p class="hero-sub">Paste a URL, get a high-resolution QR code ready to download and share.</p>
+            </div>
+        </section>
+
+        <section class="generator-section" id="generator">
+            <div class="container">
+                <div class="generator-card">
+                    <form id="qr-form" class="qr-form">
+                        {% csrf_token %}
+                        <label for="link-input" class="field-label">Destination URL</label>
+                        <div class="input-row">
+                            <input type="text" id="link-input" name="link" placeholder="https://example.com/page" autocomplete="off">
+                            <button type="submit" id="generate-btn">
+                                <i class="fa-solid fa-bolt"></i>
+                                <span>Generate</span>
+                            </button>
+                        </div>
+                        <p class="form-hint">Links without a protocol default to https.</p>
+                    </form>
+
+                    <div id="result-panel" class="result-panel hidden">
+                        <div class="result-image-wrap">
+                            <img id="result-image" src="" alt="Generated QR code">
+                        </div>
+                        <div class="result-details">
+                            <p class="result-label">Encoded link</p>
+                            <a id="result-link" href="#" target="_blank" rel="noopener" class="result-link"></a>
+                            <a id="download-btn" class="download-btn" download>
+                                <i class="fa-solid fa-download"></i>
+                                <span>Download PNG</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="error-box" class="error-box hidden"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="history-section" id="history">
+            <div class="container">
+                <h2 class="section-title">Recently generated</h2>
+                {% if recent %}
+                <div class="history-grid">
+                    {% for item in recent %}
+                    <div class="history-card">
+                        <img src="{{ item.image.url }}" alt="QR code for {{ item.link }}">
+                        <a href="{{ item.link }}" target="_blank" rel="noopener" class="history-link">{{ item.link }}</a>
+                        <span class="history-date">{{ item.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="empty-state">No codes yet. Generate your first one above.</p>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>LinkForge generates static QR codes stored locally.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
